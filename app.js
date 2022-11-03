@@ -36,12 +36,12 @@ app.get('/', (req,res)=>{
     if(req.query.busca == null){                   // Se não tiver buscando nada, fornece a Home
         res.render('home', {});                     // Renderização da Home + dados 
     } else{
-        res.send('Você busco: '+req.query.busca)
+        res.render('busca', {});
     }
 })
     
 //* Slug - URL da notícia
 //Home
 app.get('/:slug', (req, res)=>{
-    res.send(req.params.slug)
+    res.render('single', {});
 })
