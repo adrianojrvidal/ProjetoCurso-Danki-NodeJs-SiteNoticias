@@ -18,7 +18,23 @@ app.set('view engine', 'html');
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views/pages'));
 
+
 //-------------------------------------------------------------------------------------------------------
+//! Banco de dados - MongoDB
+const mongoose = require('mongoose')
+
+mongoose.connect(
+    'mongodb+srv://root:vidal1996@cluster0.lylwvm0.mongodb.net/?retryWrites=true&w=majority',
+    {useNewUrlParser: true},
+    {useUnifiedTopology: true})
+.then(function(){
+    console.log('MongoDb conectado com sucesso!')
+})
+.catch(function(err){
+    console.log(err.message)
+})
+
+
 //-------------------------------------------------------------------------------------------------------
 //! Servidor
 app.listen(3000, ()=>{
@@ -26,7 +42,6 @@ app.listen(3000, ()=>{
 })
 
 
-//-------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------
 //! Rotas
 //* Pages
