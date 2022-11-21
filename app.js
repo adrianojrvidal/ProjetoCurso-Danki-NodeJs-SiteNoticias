@@ -18,13 +18,15 @@ app.set('view engine', 'html');
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views/pages'));
 
+//* Posts.js
+const Posts = require('./Posts.js')
 
 //-------------------------------------------------------------------------------------------------------
 //! Banco de dados - MongoDB
 const mongoose = require('mongoose')
 
 mongoose.connect(
-    'mongodb+srv://root:vidal1996@cluster0.lylwvm0.mongodb.net/?retryWrites=true&w=majority',
+    'mongodb+srv://root:vidal1996@cluster0.lylwvm0.mongodb.net/dankicode?retryWrites=true&w=majority', // Após 'mongodb.net/' colocar o nome do banco de dados
     {useNewUrlParser: true},
     {useUnifiedTopology: true})
 .then(function(){
@@ -49,14 +51,95 @@ app.listen(3000, ()=>{
 app.get('/', (req,res)=>{
     //Rota para query de pesquisa =busca
     if(req.query.busca == null){                   // Se não tiver buscando nada, fornece a Home
-        res.render('home', {});                     // Renderização da Home + dados 
-    } else{
-        res.render('busca', {});
+        
+        // buscar os itens do Banco de Dados (sort() é para buscar de forma decrescente)
+        Posts.find({}).sort({'_id': -1}).exec(function(err, posts){
+            //console.log(posts[0])
+            
+            posts = posts.map(function(val){
+                return {
+                    titulo: val.titulo,
+                    descricaoCurta: val.conteudo.substr(0, 100),
+                    conteudo: val.conteudo,
+                    imagem: val.imagem,
+                    categoria: val.categoria,
+                    slug: val.slug
+                }
+            })
+
+            Posts.find({}).sort({'views': -1}).limit(3).exec(function(err,postsTop){
+
+                // console.log(posts[0]);
+
+                postsTop = postsTop.map(function(val){
+
+                    return {
+
+                        titulo: val.titulo,
+                        conteudo: val.conteudo,
+                        descricaoCurta: val.conteudo.substr(0,100),
+                        imagem: val.imagem,
+                        slug: val.slug,
+                        categoria: val.categoria,
+                        views: val.views
+
+                    }
+                })   
+
+                res.render('home', {posts:posts, postsTop:postsTop});  // Renderização da Home + dados 
+            })
+        })
+        
+    } else{ 
+    
+        Posts.find(
+            { titulo: {
+                $regex: req.query.busca,
+                $options:"i"
+            }}, function(err, posts){
+                res.render('busca', {
+                    posts:posts,
+                    contagem: posts.length
+                }) 
+            }
+        )
     }
 })
-    
-//* Slug - URL da notícia
-//Home
+
+//Single
 app.get('/:slug', (req, res)=>{
-    res.render('single', {});
+
+    Posts.findOneAndUpdate({slug: req.params.slug}, {$inc: {views:1}}, {new: true}, function(err, resp){
+        console.log(resp)
+        
+        if(resp != null) {
+            Posts.find({}).sort({'views': -1}).limit(3).exec(function(err,postsTop){
+
+                // console.log(posts[0]);
+        
+                postsTop = postsTop.map(function(val){
+        
+                    return {
+        
+                        titulo: val.titulo,
+                        conteudo: val.conteudo,
+                        descricaoCurta: val.conteudo.substr(0,100),
+                        imagem: val.imagem,
+                        slug: val.slug,
+                        categoria: val.categoria,
+                        views: val.views
+        
+                    }      
+                })
+                
+                res.render('single', {noticia: resp, postsTop:postsTop});
+            })
+
+        } else (res.redirect('/'))
+    })
+    
 })
+
+
+
+    
