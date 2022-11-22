@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .header-painel {
+            width: 100%;
+            padding: 10px;
+            background-color: rgb(42, 105, 172);
+        }
+
+        form {
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        form input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        form textarea {
+            width: 100%;
+            height: 120px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        form input[type=submit] {
+            width: 20%;
+            height: 40px;
+            background-color: rgb(118, 160, 204);
+            border: 0;
+            cursor: pointer;
+        }
+
+        .noticia-single {
+            margin-top: 10px;
+            border-bottom: 2px dashed #ccc;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
+
+</head>
+<body>
+    
+    <div class="header-painel">
+        <h2>Cadastro de Noticias</h2>
+    </div>
+
+    <form action="/admin/cadastro" method="post">
+        <input type="text" name="titulo_noticia" placeholder="Título da Notícia" id="">
+        <input type="text" name="slug" placeholder="Slug" id="">
+        <input type="text" name="categoria" placeholder="Categoria" id="">
+        <input type="text" name="url_imagem" placeholder="Link da imagem" id="">
+        <textarea placeholder="Notícia" name="conteudo_noticia" id="" cols="30" rows="10"></textarea>
+        <input type="text" name="autor" placeholder="Autor" id="">
+        <input type="submit" value="Cadastrar!" name="acao">
+    </form>
+
+    <br><br>
+
+    <div class="header-painel">
+        <h2>Listando Noticias</h2>
+    </div>
+
+    <div class="noticia-single">
+        <p>Titulo Notícia:</p>
+        <a href="/admin/deletar/id">(X)</a>
+    </div>
+
+</body>
+</html>

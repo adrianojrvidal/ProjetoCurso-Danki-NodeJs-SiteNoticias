@@ -21,6 +21,20 @@ app.set('views', path.join(__dirname, 'views/pages'));
 //* Posts.js
 const Posts = require('./Posts.js')
 
+//* Express-Sessions
+var session = require('express-session')
+//npm i express-session -save
+
+app.use(session({
+    secret: '123456',
+    // resave: false,
+    // saveUninitialized: true,
+    cookie: {maxAge: 60000}           
+    //{secure: true}
+}))
+
+
+
 //-------------------------------------------------------------------------------------------------------
 //! Banco de dados - MongoDB
 const mongoose = require('mongoose')
@@ -59,7 +73,7 @@ app.get('/', (req,res)=>{
             posts = posts.map(function(val){
                 return {
                     titulo: val.titulo,
-                    descricaoCurta: val.conteudo.substr(0, 100),
+                    descricaoCurta: val.conteudo,
                     conteudo: val.conteudo,
                     imagem: val.imagem,
                     categoria: val.categoria,
@@ -77,7 +91,7 @@ app.get('/', (req,res)=>{
 
                         titulo: val.titulo,
                         conteudo: val.conteudo,
-                        descricaoCurta: val.conteudo.substr(0,100),
+                        descricaoCurta: val.conteudo,
                         imagem: val.imagem,
                         slug: val.slug,
                         categoria: val.categoria,
@@ -139,6 +153,78 @@ app.get('/:slug', (req, res)=>{
     })
     
 })
+
+let ususarios = [
+    {
+        login:'admin',
+        senha:'admin'
+    }
+]
+
+//Admin
+
+app.post('/admin/login', (req, res)=>{
+    ususarios.map(function(val){
+        if(val.login == req.body.login && val.senha == req.body.senha){
+            req.session.login = 'Admin'
+        }
+    })
+
+    res.redirect('/admin/login')
+
+})
+
+
+
+app.post('/admin/cadastro',(req,res)=>{
+
+    //console.log(req.body);
+
+    Posts.create({
+
+        titulo:req.body.titulo_noticia,
+
+        imagem: req.body.url_imagem,
+
+        categoria: req.body.categoria,
+
+        conteudo: req.body.noticia,
+
+        slug: req.body.slug,
+
+        autor: req.body.autor,
+
+        views: 0
+
+    });
+
+    res.redirect('/admin/login')
+    
+})
+
+app.get('/admin/deletar/:id', (req, res)=>{
+
+    Posts.deleteOne({_id:req.params.id})
+        
+        .then(function(){
+            res.redirect('/admin/login')
+        }
+    )
+
+})
+
+
+
+app.get('/admin/login', (req, res)=>{
+    
+    // if (req.session.login == null) {
+    //     res.render('admin-login')
+    // } else {
+         res.render('admin-painel')
+    // }
+    
+})
+
 
 
 
